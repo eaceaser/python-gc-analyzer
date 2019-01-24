@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/montanaflynn/stats"
-	"log"
 	"os"
 	"sync"
 	"text/tabwriter"
@@ -50,7 +49,7 @@ func (s *Stats) Process(c chan *CollectionStat) {
 			break
 		case 2:
 			s.gen2Times = append(s.gen2Times, float64(stat.elapsedMicros))
-			s.gen2Sum = stat.elapsedMicros
+			s.gen2Sum += stat.elapsedMicros
 			break
 		}
 		s.lock.Unlock()
@@ -66,18 +65,16 @@ func (s *Stats) PrintAndFlush() {
 
 	gen0Max, err := stats.Max(s.gen0Times)
 	if err != nil {
-		log.Printf("unable to compute max of gen0 times")
-		return
+		gen0Max = 0
 	}
+
 	gen1Max, err := stats.Max(s.gen1Times)
 	if err != nil {
-		log.Printf("unable to compute max of gen1 times")
-		return
+		gen1Max = 0
 	}
 	gen2Max, err := stats.Max(s.gen2Times)
 	if err != nil {
-		log.Printf("unable to compute max of gen2 times")
-		return
+		gen2Max = 0
 	}
 
 	totalCount := len(s.gen0Times) + len(s.gen1Times) + len(s.gen2Times)
